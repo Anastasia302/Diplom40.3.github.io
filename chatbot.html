@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Чат-Бот</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            overflow-x: hidden;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        header {
+            background-color: transparent;
+            padding: 10px;
+            width: 100%;
+            max-width: 1200px; /* Ограничиваем максимальную ширину заголовка */
+            display: flex;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            width: 100%; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title {
+            background-color: #007BFF;
+            color: white;
+            padding: 8px 20px; /* Измененный padding для лучших пропорций */
+            border-radius: 50px;
+            font-size: 1.5rem; /* Размер шрифта заголовка */
+            text-align: center;
+            flex-grow: 1; /* Заголовок занимает оставшееся пространство */
+            margin: 0 10px; /* Отступы по бокам */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .menu-icon {
+            width: 40px; /* Размер кнопки для удобства */
+            height: 40px;
+            background-color: #007BFF;
+            border-radius: 50%; /* Круглая форма */
+            display: flex;
+            flex-direction: column; /* Для вертикального размещения полос */
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 1100;
+            margin-left: 15px; /* Отступ слева для лучшего позиционирования */
+        }
+
+        .menu-icon .bar {
+            width: 24px; /* Ширина полос */
+            height: 4px; /* Высота полос */
+            background-color: white; /* Цвет полос */
+            margin: 3px 0; /* Отступ между полосами */
+            border-radius: 4px; /* Закругленный край полос */
+            transition: all 0.3s; /* Плавные переходы при изменениях */
+        }
+
+        .clear-icon {
+            width: 40px; /* Размер кнопки очистки */
+            height: 40px;
+            background-color: #007BFF;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            color: white;
+            font-size: 1.5rem; /* Размер шрифта для кнопки очистки */
+            margin-left: 10px; /* Отступ слева от кнопки очистки */
+            margin-right: 15px; /* Добавленный отступ справа */
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px; /* Исходное положение бокового меню */
+            width: 300px;
+            height: 100%;
+            background-color: white;
+            border-right: 1px solid #ccc;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            transition: left 0.3s;
+            z-index: 1000;
+        }
+
+        .sidebar.open {
+            left: 0; /* Положение бокового меню при открытии */
+        }
+
+        .sidebar button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            background: none;
+            font-size: 1.4rem; /* Размер шрифта для меню */
+            text-align: left;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .sidebar button:hover {
+            background-color: #f0f0f0; /* Цвет кнопки при наведении */
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 80px 20px 70px; /* Отступы для контента */
+            overflow-y: auto;
+            margin-top: 80px; /* Отступ сверху для учета фиксированного заголовка */
+            width: 100%;
+            max-width: 1200px; /* Ограничиваем ширину контейнера чата */
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Тень для контейнера чата */
+        }
+
+        .message {
+            padding: 10px 15px;
+            border-radius: 25px;
+            margin: 5px 0;
+            max-width: 80%;
+            font-size: 1.2rem;
+            word-wrap: break-word;
+        }
+
+        .message.bot {
+            background-color: #e0e0e0;
+            align-self: flex-start;
+        }
+
+        .message.user {
+            background-color: #007BFF;
+            color: white;
+            align-self: flex-end;
+        }
+
+        .input-container {
+            display: flex;
+            padding: 10px;
+            background-color: #fff;
+            border-top: 1px solid #ccc;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%; /* Изменено на 100% для достижения правого края */
+            max-width: 1200px; /* Ограничиваем ширину ввода */
+            height: 70px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            align-items: center;
+            justify-content: space-between; /* Изменено на space-between для распределения элементов */
+        }
+
+        .input-container input {
+            flex: 1;
+            padding: 10px; /* Измененный padding для поля ввода */
+            border-radius: 30px;
+            border: 1px solid #ccc;
+            margin-right: 10px; /* Отступ справа для кнопки */
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .input-container button {
+            padding: 10px 20px; /* Размер кнопки отправки */
+            border: none;
+            border-radius: 30px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            margin-left: 10px; /* Отступ слева */
+        }
+
+        .input-container button:hover {
+            background-color: #0056b3; /* Цвет кнопки при наведении */
+        }
+
+        @media (max-width: 600px) {
+            .title {
+                font-size: 1.2rem; /* Уменьшаем размер шрифта заголовка для мобильных устройств */
+            }
+            .menu-icon {
+                width: 35px;
+                height: 35px;
+            }
+            .clear-icon {
+                width: 35px;
+                height: 35px;
+            }
+            .input-container {
+                height: 60px; /* Уменьшаем высоту ввода на мобильных */
+            }
+        }
+
+    </style>
+</head>
+<body>
+<header>
+    <div class="header-container">
+        <div class="menu-icon" id="menu-icon">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+        <div class="title">Чат-Бот</div>
+        <div class="clear-icon" id="clear-icon">×</div>
+    </div>
+</header>
+
+<div class="sidebar" id="sidebar">
+    <button onclick="window.location.href='index.html'">Главная страница</button>
+    <button onclick="window.location.href='account.html'">Аккаунт</button>
+    <button onclick="window.location.href='calendar.html'">Календарь</button>
+    <button onclick="window.location.href='test.html'">Тест</button>
+    <button onclick="window.location.href='honor_board.html'">Доска почета</button>
+    <button onclick="window.location.href='psychologist.html'">Психолог</button>
+    <button onclick="window.location.href='documents.html'">Документы</button>
+    <button onclick="window.location.href='vacation.html'">Отпуск</button>
+    <button onclick="window.location.href='lost_and_found.html'">Потеряшки</button>
+    <button onclick="window.location.href='health.html'">Здоровье</button>
+    <button onclick="window.location.href='offers.html'">Предложения</button>
+</div>
+
+<div class="chat-container" id="chatContainer">
+    <!-- Сообщения будут добавлены здесь -->
+</div>
+
+<div class="input-container">
+    <input type="text" id="messageInput" placeholder="Введите сообщение..." />
+    <button id="sendButton">Отправить</button>
+</div>
+
+<script>
+    const menuIcon = document.getElementById('menu-icon');
+    const sidebar = document.getElementById('sidebar');
+    const clearIcon = document.getElementById('clear-icon');
+    const chatContainer = document.getElementById('chatContainer');
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+
+    menuIcon.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+    });
+
+    clearIcon.addEventListener('click', () => {
+        // Логика для очистки чата, если необходимо.
+    });
+
+    sendButton.addEventListener('click', () => {
+        const userMessage = messageInput.value;
+        if (userMessage) {
+            addMessage(userMessage, 'user');
+            messageInput.value = '';
+            // Здесь также можно добавить автоматический ответ от бота, если потребуется.
+        }
+    });
+
+    function addMessage(content, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', sender);
+        messageDiv.textContent = content;
+        chatContainer.appendChild(messageDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight; // Прокрутка вниз для отображения нового сообщения.
+    }
+</script>
+</body>
+</html>

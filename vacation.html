@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Выбор дней отпуска — 2025</title>
+  <style>
+    html, body { max-width: 100vw; overflow-x: hidden !important; box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden !important;
+    }
+    header {
+      background-color: transparent;
+      padding: 10px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      position: fixed;
+      top: 0;
+      z-index: 1000;
+    }
+    .title {
+      background-color: #007BFF;
+      color: white;
+      padding: 5px 15px;
+      border-radius: 50px;
+      font-size: 1.5rem;
+      text-align: center;
+      max-width: 90vw;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .menu-icon {
+      position: absolute;
+      left: 36px;
+      top: 10px;
+      width: 40px;
+      height: 40px;
+      background-color: #007BFF;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 1100;
+    }
+    .menu-icon .bar {
+      width: 22px;
+      height: 3.5px;
+      background-color: white;
+      margin: 2.5px 0;
+      border-radius:1.5px;
+      display: block;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -300px;
+      width: 300px;
+      max-width: 100vw;
+      height: 100%;
+      background-color: white;
+      border-right: 1px solid #ccc;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      transition: left 0.3s;
+      z-index: 1000;
+    }
+    .sidebar.open { left: 0; }
+    .sidebar button {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      border: none;
+      background: none;
+      font-size: 1.4rem;
+      text-align: left;
+      cursor: pointer;
+      color: #333;
+    }
+    .sidebar button:hover { background-color: #f0f0f0; }
+    .vacation-panel {
+      background: #fff;
+      border-radius: 17px;
+      padding: 20px 17px 14px 17px;
+      margin: 82px auto 0 auto;
+      box-shadow: 0 2px 14.29px rgba(0, 0, 0, 0.09);
+      max-width: 660px;
+      min-width: 240px;
+      width: 95vw;
+      text-align: center;
+      font-size: 1.11rem;
+      color: #0080ff;
+      font-weight: 500;
+      position: relative;
+      z-index: 1;
+    }
+    .vac-days-list {
+      margin: 14px 0 2px 0;
+      color: #003679;
+      font-size: 1.04rem;
+      letter-spacing: .3px;
+      word-break: break-word;
+      word-wrap: break-word;
+    }
+    .clear-btn {
+      border: none;
+      background: #edf5ff;
+      color: #0067ba;
+      border-radius: 9px;
+      margin: 10px 0 0 0;
+      padding: 8px 22px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.17s;
+      box-shadow: 0 2px 12px #007bff10;
+    }
+    .clear-btn:hover { background: #eef4fe; }
+    .month-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 23px;
+      padding: 0 10px;
+      width: 100%;
+      max-width: 1200px;
+      box-sizing: border-box;
+    }
+    .month {
+      flex: 1 1 320px;
+      margin: 10px;
+      min-width: 270px;
+      max-width: 360px;
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 2px 14.29px rgba(0, 0, 0, 0.1);
+      padding: 10px;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    @media (max-width: 900px) {
+      .month { flex: 1 1 calc(50% - 20px); }
+    }
+    @media (max-width: 600px) {
+      .month { flex-basis: 100%; margin: 5px 0; min-width: 0; max-width: 100vw; }
+      .title { font-size: 1.5rem; }
+      .vacation-panel{ padding: 16px 3vw 8px 3vw; }
+    }
+    .current-month {
+      border: 3px solid #007BFF;
+      box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+    }
+    .month h2 {
+      font-size: 2rem;
+      text-align: center;
+      margin: 0;
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 1;
+      padding: 5px 0;
+    }
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+    }
+    .day-label {
+      text-align: center;
+      font-weight: bold;
+      color: #007BFF;
+      padding: 5px 0;
+      font-size: 0.9rem;
+    }
+    .date-circle {
+      width: 40px;
+      height: 40px;
+      background-color: #e0e0e0;
+      border-radius: 50%;
+      line-height: 40px;
+      margin: 0 auto;
+      color: #333;
+      cursor: pointer;
+      font-size: 1rem;
+      text-align: center;
+      position: relative;
+      transition: box-shadow 0.2s, background 0.2s, color 0.2s;
+      border: none;
+      user-select: none;
+    }
+    .date-circle.selected,
+    .date-circle.selected:hover {
+      background-color: #007BFF !important;
+      color: #fff;
+      font-weight: bold;
+      box-shadow: 0 0 8px #b2dbff;
+      border: 2px solid #0058bc;
+    }
+    .date-circle.today {
+      border: 2px solid #007BFF;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+    .date-circle:hover {
+      background: #cce9ff;
+      color: #007BFF;
+      transition: 0.2s;
+    }
+    /* drag-select подсветка выделения */
+    .date-circle.drag-select {
+      outline: 2px solid #0080ff;
+      outline-offset: 1px;
+      z-index: 2;
+    }
+    .scroll-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 2px 9.52px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s;
+      z-index: 2000;
+      text-align: center;
+      line-height: 1;
+    }
+    .scroll-button span {
+      display:inline-block;
+      line-height:1;
+      vertical-align:middle;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="menu-icon" id="menu-icon">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </div>
+  <div class="title">Мой отпуск 2025</div>
+</header>
+<div class="sidebar" id="sidebar">
+  <button onclick="window.location.href='index.html'">Главная страница</button>
+  <button onclick="window.location.href='account.html'">Аккаунт</button>
+  <button onclick="window.location.href='calendar.html'">Календарь</button>
+  <button onclick="window.location.href='test.html'">Тест</button>
+  <button onclick="window.location.href='honor_board.html'">Доска почета</button>
+  <button onclick="window.location.href='psychologist.html'">Психолог</button>
+  <button onclick="window.location.href='documents.html'">Документы</button>
+  <button onclick="window.location.href='vacation.html'" class="active">Отпуск</button>
+  <button onclick="window.location.href='lost_and_found.html'">Потеряшки</button>
+  <button onclick="window.location.href='health.html'">Здоровье</button>
+  <button onclick="window.location.href='offers.html'">Предложения</button>
+</div>
+<div class="vacation-panel" id="vacation-panel">
+  <span>Ваши дни отпуска в 2025 году:</span>
+  <div class="vac-days-list" id="vac-days-list">
+    <span style="color:#888;font-size:.98em;">Не выбрано ни одного дня</span>
+  </div>
+  <button class="clear-btn" id="clear-vac-btn" style="display:none">Очистить выбор</button>
+</div>
+<div class="month-container" id="month-container"></div>
+<button class="scroll-button" id="scroll-button" title="Вниз">
+  <span id="scroll-arrow">&#8595;</span>
+</button>
+<script>
+const menuIcon = document.getElementById('menu-icon');
+const sidebar = document.getElementById('sidebar');
+menuIcon.addEventListener('click', () => sidebar.classList.toggle('open'));
+document.addEventListener('click', (e) => {
+  if(sidebar.classList.contains('open') && !sidebar.contains(e.target) && !menuIcon.contains(e.target)){sidebar.classList.remove('open')}
+});
+
+// ---- VACATION DAYS STORAGE ----
+const VAC_LS_KEY = "vacationDays2025";
+function saveVacationDays(daysArray) { localStorage.setItem(VAC_LS_KEY, JSON.stringify(daysArray)); }
+function loadVacationDays() {
+  try { return JSON.parse(localStorage.getItem(VAC_LS_KEY)) || []; } catch { return []; }
+}
+function dateObjToStr({month, day}) { return `2025-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`; }
+function strToDateObj(dateStr) {
+  let [, m, d] = dateStr.match(/^2025-(\d\d)-(\d\d)$/) || [];
+  if (m && d) return {month:+m-1,day:+d};
+  return null;
+}
+
+// ---- CALENDAR with mouse & touch drag-select ----
+const currentDate = new Date();
+const currentYear = 2025;
+const currentMonth = (currentDate.getFullYear() === 2025) ? currentDate.getMonth() : 0;
+const currentDay = (currentDate.getFullYear() === 2025) ? currentDate.getDate() : 1;
+const monthContainerEl = document.getElementById("month-container");
+const MONTH_NAMES = 'Январь,Февраль,Март,Апрель,Май,Июнь,Июль,Август,Сентябрь,Октябрь,Ноябрь,Декабрь'.split(',');
+
+let selected = loadVacationDays();
+let isDragging = false;
+let dragStart = null;
+let dragEnd = null;
+let dragMode = null;
+let draggingTouch = false;
+
+function renderCalendar() {
+  monthContainerEl.innerHTML = "";
+  for (let m = 0; m < 12; m++) {
+    const monthEl = document.createElement('div');
+    monthEl.className = 'month' + (m === currentMonth ? ' current-month':'');
+    monthEl.innerHTML = `<h2>${MONTH_NAMES[m]}</h2>`;
+
+    // Дни недели
+    const daysOfWeek = document.createElement('div');
+    daysOfWeek.className = 'calendar';
+    ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].forEach(day=>{
+      let el = document.createElement("div");
+      el.className = "day-label";
+      el.textContent = day;
+      daysOfWeek.appendChild(el);
+    });
+    monthEl.appendChild(daysOfWeek);
+
+    const calendar = document.createElement('div');
+    calendar.className = 'calendar';
+    const firstDay = new Date(2025, m, 1);
+    const daysCount = new Date(2025, m+1, 0).getDate();
+    let dayOfWeek = (firstDay.getDay() + 6) % 7;
+    for (let i = 0; i < dayOfWeek; i++) {
+      calendar.appendChild(document.createElement('div'));
+    }
+    for (let d = 1; d <= daysCount; d++) {
+      let dc = document.createElement('div');
+      let btn = document.createElement('button');
+      btn.type = "button";
+      btn.className = "date-circle";
+      btn.textContent = d;
+      const dateStr = dateObjToStr({month: m,day: d});
+      if(m===currentMonth && d===currentDay) btn.classList.add('today');
+      if (selected.includes(dateStr)) {
+        btn.classList.add('selected');
+      }
+      // ПК
+      btn.addEventListener('mousedown', (e) => {
+        isDragging = true; draggingTouch = false;
+        dragStart = {month: m, day: d}; dragEnd = {month: m, day: d};
+        dragMode = selected.includes(dateStr) ? "deselect" : "select";
+        highlightDragRange();
+        e.preventDefault();
+      });
+      btn.addEventListener('mouseenter', (e) => {
+        if (isDragging && !draggingTouch) { dragEnd = {month: m, day: d}; highlightDragRange(); }
+      });
+      btn.addEventListener('mouseup', handleMouseUp);
+      btn.addEventListener('mouseleave', (e) => {
+        if (isDragging && !draggingTouch && e.buttons === 0) handleMouseUp();
+      });
+
+      // Мобильные устройства (пальцем)
+      btn.addEventListener('touchstart', function(e) {
+        isDragging = true; draggingTouch = true;
+        dragStart = {month: m, day: d}; dragEnd = {month: m, day: d};
+        dragMode = selected.includes(dateStr) ? "deselect" : "select";
+        highlightDragRange();
+        //e.preventDefault(); // не мешаем прокрутке!
+      }, {passive:true});
+      btn.addEventListener('touchmove', function(e) {
+        if (isDragging && draggingTouch && e.touches.length) {
+          const touch = e.touches[0];
+          const target = document.elementFromPoint(touch.clientX, touch.clientY);
+          if(target && target.classList && target.classList.contains('date-circle') && target.dataset.month !== undefined && target.dataset.day !== undefined){
+            dragEnd = {month: Number(target.dataset.month), day: Number(target.dataset.day)};
+            highlightDragRange();
+          }
+        }
+      }, {passive:true});
+      btn.addEventListener('touchend', function(e) {
+        if (isDragging && draggingTouch) {
+          handleMouseUp();
+        }
+      });
+      // Для одиночного клика (без drag)
+      btn.addEventListener('click', (e) => {
+        if (!isDragging) toggleVacationDay(m, d, btn);
+      });
+      btn.dataset.month = m;
+      btn.dataset.day = d;
+      dc.appendChild(btn);
+      calendar.appendChild(dc);
+    }
+    monthEl.appendChild(calendar);
+    monthContainerEl.appendChild(monthEl);
+  }
+  showVacationDays();
+  document.addEventListener('mouseup', handleMouseUp);
+}
+function handleMouseUp(e){
+  if(isDragging && dragStart && dragEnd){
+    let range = getDateRange(dragStart, dragEnd);
+    let newSelected = selected.slice();
+    range.forEach(dateStr=>{
+      if(dragMode==="select") {
+        if(!newSelected.includes(dateStr)) newSelected.push(dateStr);
+      } else if(dragMode==="deselect") {
+        let idx = newSelected.indexOf(dateStr);
+        if(idx !== -1) newSelected.splice(idx,1);
+      }
+    });
+    selected = newSelected;
+    saveVacationDays(selected);
+    isDragging = false; dragStart = dragEnd = null; dragMode = null; draggingTouch = false;
+    renderCalendar();
+  }
+}
+function highlightDragRange() {
+  document.querySelectorAll('.date-circle').forEach(btn=>{
+    btn.classList.remove('drag-select');
+  });
+  if(!isDragging || !dragStart || !dragEnd) return;
+  let range = getDateRange(dragStart, dragEnd);
+  document.querySelectorAll('.date-circle').forEach(btn=>{
+    let m = +btn.dataset.month, d = +btn.dataset.day;
+    const ds = dateObjToStr({month:m,day:d});
+    if(range.includes(ds)) btn.classList.add('drag-select');
+  });
+}
+function getDateRange(start, end){
+  let s = new Date(2025, start.month, start.day);
+  let e = new Date(2025, end.month, end.day);
+  if(s > e) [s, e] = [e, s];
+  let out = [];
+  let cur = new Date(s);
+  while(cur <= e){
+    out.push(dateObjToStr({month:cur.getMonth(),day:cur.getDate()}));
+    cur.setDate(cur.getDate()+1);
+  }
+  return out;
+}
+
+function toggleVacationDay(month, day, btn) {
+  const dateStr = dateObjToStr({month, day});
+  const idx = selected.indexOf(dateStr);
+  if(idx===-1){
+    selected.push(dateStr);
+    btn.classList.add('selected');
+  } else {
+    selected.splice(idx,1);
+    btn.classList.remove('selected');
+  }
+  saveVacationDays(selected);
+  showVacationDays();
+}
+function showVacationDays() {
+  const vacDaysList = document.getElementById('vac-days-list');
+  const clearBtn = document.getElementById('clear-vac-btn');
+  if(selected.length === 0) {
+    vacDaysList.innerHTML = '<span style="color:#888;font-size:.98em;">Не выбрано ни одного дня</span>';
+    clearBtn.style.display = "none";
+    return;
+  }
+  const sorted = selected.slice().sort();
+  let res = [];
+  let group = [];
+  let prevObj = null;
+  for(let i=0;i<=sorted.length;i++) {
+    let obj = i<sorted.length ? strToDateObj(sorted[i]) : null;
+    let prev = prevObj;
+    if(i === 0 || (prev && obj && isNextDay(prev,obj))) {
+      group.push(obj||prev);
+    } else {
+      if(group.length === 1) {
+        res.push(`${group[0].day} ${MONTH_NAMES[group[0].month].slice(0,3).toLowerCase()}`);
+      } else if(group.length > 1) {
+        let monthName;
+        if(group[0].month === group[group.length-1].month) {
+          monthName = MONTH_NAMES[group[0].month].slice(0,3).toLowerCase();
+          res.push(`${group[0].day}-${group[group.length-1].day} ${monthName}`);
+        } else {
+          let startMonth = MONTH_NAMES[group[0].month].slice(0,3).toLowerCase();
+          let endMonth   = MONTH_NAMES[group[group.length-1].month].slice(0,3).toLowerCase();
+          res.push(`${group[0].day} ${startMonth} — ${group[group.length-1].day} ${endMonth}`);
+        }
+      }
+      group = [obj];
+    }
+    prevObj = obj;
+  }
+  vacDaysList.textContent = res.join(', ');
+  clearBtn.style.display = "";
+}
+function isNextDay(a,b){
+  let d1 = new Date(2025, a.month, a.day);
+  let d2 = new Date(2025, b.month, b.day);
+  let diff = (d2 - d1) / (24*3600*1000);
+  return diff === 1;
+}
+document.getElementById('clear-vac-btn').onclick = function(){
+  if(confirm('Вы действительно хотите снять все дни отпуска?')) {
+    selected = [];
+    saveVacationDays(selected);
+    renderCalendar();
+  }
+};
+
+renderCalendar();
+
+// ---- Кнопка Вверх-Вниз ----
+const scrollButton = document.getElementById('scroll-button');
+const scrollArrow = document.getElementById('scroll-arrow');
+function isAtTop() {
+  return (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0) < 10;
+}
+function updateArrow() {
+  if (isAtTop()) {
+    scrollArrow.innerHTML = "&#8595;";
+    scrollButton.title = "Вниз";
+  } else {
+    scrollArrow.innerHTML = "&#8593;";
+    scrollButton.title = "Вверх";
+  }
+}
+scrollButton.addEventListener('click', () => {
+  if (isAtTop()) {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  } else {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+});
+window.addEventListener('scroll', updateArrow);
+updateArrow();
+</script>
+</body>
+</html>

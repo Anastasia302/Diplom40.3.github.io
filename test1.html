@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Тест по первой главе 79-ФЗ</title>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background: #f0f0f0;
+    margin: 0;
+    padding-top: 70px; /* чтобы шапка не мешала */
+  }
+  /* Шапка с кнопкой меню и названием */
+  header {
+    position: fixed; top: 0; width: 100%; height: 70px;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent; z-index: 999;
+  }
+  .title {
+    background:#007BFF; color:#fff; padding:8px 20px; border-radius:50px; font-size:1.4rem;
+  }
+  /* Кнопка меню — слева */
+  .menu-button {
+    position: absolute; left: 20px; top: 15px; width:40px; height:40px;
+    border:2px solid #007BFF; border-radius:50%;
+    display:flex; justify-content:center; align-items:center; cursor:pointer; background:#fff;
+    box-shadow:0 2px 4px rgba(0,0,0,0.1);
+  }
+  .menu-icon {
+    width:20px; height:2px; background:#007BFF; margin:3px 0;
+  }
+  /* Боковое меню */
+  .sidebar {
+    position: fixed; top:0; left:-300px; width:250px; height:100vh;
+    background:#fff; box-shadow:2px 0 8px rgba(0,0,0,0.1); transition:left 0.3s;
+    padding-top:70px; display:flex; flex-direction:column; z-index:9999;
+  }
+  .sidebar.open { left:0; }
+  .sidebar button {
+    background:none; border:none; padding:15px; text-align:left; width:100%; font-size:1.1rem; cursor:pointer; color:#333;
+  }
+  .sidebar button:hover { background:#f0f0f0; }
+
+  /* Контейнер теста */
+  .container {
+    max-width: 600px; margin: 0 auto; padding: 20px;
+  }
+  /* Вопросы */
+  .question-box {
+    display: none;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .question-box.active { display: block; }
+  .question { font-size: 1.2rem; margin-bottom: 10px; }
+  .answers { display: flex; flex-direction: column; }
+  .answer-label { margin: 5px 0; font-size: 1rem; }
+  /* Кнопка перехода */
+  .next-btn {
+    margin-top: 15px; padding: 10px 20px; background:#007BFF; color:#fff; border:none; border-radius:5px; font-weight:600; cursor:pointer;
+  }
+  .next-btn:hover { background:#0056b3; }
+  /* Итог */
+  #result {
+    display: none; margin-top:20px; padding:15px; background:#fff; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.05); text-align:center;
+  }
+</style>
+</head>
+<body>
+
+<!-- Шапка -->
+<header>
+  <div class="menu-button" id="menuBtn" aria-label="Меню" role="button" tabindex="0">
+    <div class="menu-icon"></div>
+    <div class="menu-icon"></div>
+    <div class="menu-icon"></div>
+  </div>
+  <div class="title">Тест по первой главе 79-ФЗ</div>
+</header>
+
+<!-- Боковое меню -->
+<div class="sidebar" id="sidebar">
+  <button onclick="window.location.href='index.html'">Главная страница</button>
+  <button onclick="window.location.href='account.html'">Аккаунт</button>
+  <button onclick="window.location.href='calendar.html'">Календарь</button>
+  <button onclick="window.location.href='test.html'" class="active">Тест</button>
+  <button onclick="window.location.href='honor_board.html'">Доска почета</button>
+  <button onclick="window.location.href='psychologist.html'">Психолог</button>
+  <button onclick="window.location.href='documents.html'">Документы</button>
+  <button onclick="window.location.href='vacation.html'">Отпуск</button>
+  <button onclick="window.location.href='lost_and_found.html'">Потеряшки</button>
+  <button onclick="window.location.href='health.html'">Здоровье</button>
+  <button onclick="window.location.href='offers.html'">Предложения</button>
+</div>
+
+<div class="container">
+  <!-- Вопрос 1 -->
+  <div id="question1" class="question-box active">
+    <div class="question">1. Каково основное предназначение первой главы 79-ФЗ?</div>
+    <div class="answers">
+      <label class="answer-label"><input type="radio" name="q1" value="a"> Обеспечение ответственности налоговых органов и налогоплательщиков</label>
+      <label class="answer-label"><input type="radio" name="q1" value="b"> Регламентация налоговых ставок</label>
+      <label class="answer-label"><input type="radio" name="q1" value="c"> Организация документооборота</label>
+      <label class="answer-label"><input type="radio" name="q1" value="d"> Иные вопросы</label>
+    </div>
+    <button class="next-btn" onclick="nextQuestion(1)">Далее</button>
+  </div>
+
+  <!-- Вопрос 2 -->
+  <div id="question2" class="question-box">
+    <div class="question">2. Что включает ответственность налоговых органов в первой главе?</div>
+    <div class="answers">
+      <label class="answer-label"><input type="radio" name="q2" value="a"> Проведение проверок и меры административной ответственности</label>
+      <label class="answer-label"><input type="radio" name="q2" value="b"> Выдача налоговых уведомлений</label>
+      <label class="answer-label"><input type="radio" name="q2" value="c"> Оперативное реагирование на обращения</label>
+      <label class="answer-label"><input type="radio" name="q2" value="d"> Только контроль за соблюдением налогового законодательства</label>
+    </div>
+    <button class="next-btn" onclick="nextQuestion(2)">Далее</button>
+  </div>
+
+  <!-- Вопрос 3 -->
+  <div id="question3" class="question-box">
+    <div class="question">3. Как осуществляется ответственность налогоплательщиков в первой главе?</div>
+    <div class="answers">
+      <label class="answer-label"><input type="radio" name="q3" value="a"> Уголовная ответственность</label>
+      <label class="answer-label"><input type="radio" name="q3" value="b"> Административная ответственность</label>
+      <label class="answer-label"><input type="radio" name="q3" value="c"> Гражданская ответственность</label>
+      <label class="answer-label"><input type="radio" name="q3" value="d"> Все вышеперечисленное</label>
+    </div>
+    <button class="next-btn" onclick="showResult()">Закончить тест</button>
+  </div>
+
+  <!-- Результат -->
+  <div id="result">
+    <h2>Результаты теста</h2>
+    <p id="score"></p>
+    <button onclick="location.reload()">Пройти заново</button>
+  </div>
+</div>
+
+<script>
+  const answersCorrect = {
+    q1: 'a',
+    q2: 'a',
+    q3: 'd'
+  };
+  let correctAnswers = 0;
+
+  function nextQuestion(qNumber) {
+    // Проверка выбранного варианта
+    const answers = document.getElementsByName('q' + qNumber);
+    let selected = '';
+    for (let ans of answers) {
+      if (ans.checked) {
+        selected = ans.value;
+        break;
+      }
+    }
+    // Проверка правильного ответа
+    if (selected === answersCorrect['q' + qNumber]) {
+      correctAnswers++;
+    }
+    // Переход к следующему вопросу
+    document.getElementById('question' + qNumber).classList.remove('active');
+    const nextQ = qNumber + 1;
+    const nextDiv = document.getElementById('question' + nextQ);
+    if (nextDiv) {
+      nextDiv.classList.add('active');
+    } else {
+      showResult();
+    }
+  }
+
+  function showResult() {
+    document.querySelectorAll('.question-box').forEach(div => div.classList.remove('active'));
+    document.getElementById('result').style.display='block';
+    document.getElementById('score').textContent = `Вы правильно ответили на ${correctAnswers} из ${Object.keys(answersCorrect).length} вопросов.`;
+  }
+
+  // Обработка кнопки меню
+const menuBtn = document.getElementById('menuBtn');
+const sidebar = document.getElementById('sidebar');
+menuBtn.onclick = () => {
+  sidebar.classList.toggle('open');
+};
+</script>
+
+</body>
+</html>
